@@ -19,7 +19,7 @@ class MDP:
         # set seed - should only happen once!
         np.random.seed(seed)
 
-        self.S= num_states + num_terminal
+        self.S = num_states + num_terminal
         self.A = num_actions
 
         # just for the
