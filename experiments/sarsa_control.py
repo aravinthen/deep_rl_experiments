@@ -1,4 +1,4 @@
-from algorithms.classical.mc import MonteCarlo
+from algorithms.classical.sarsa import SARSA
 from utils.markov_decision_process import MDP
 
 seed = 42
@@ -13,6 +13,10 @@ problem = MDP(num_states=n_s,
               reward_range=(-1,1),
               seed=seed)
 
-first_visit_mc = MonteCarlo(mdp=problem)
-first_visit_mc.run(200000, 0.999)
-print(first_visit_mc.policy)
+s = SARSA(mdp=problem)
+print(s.policy())
+s.run_steps(200000)
+print(s.policy())
+
+# mc: [2 1 1 0 3 0 3 3 2 4 0]
+# dp: [2 4 4 0 3 0 3 1 2 0 0]

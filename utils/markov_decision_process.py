@@ -105,7 +105,7 @@ class MDP:
         current_state = self.state
 
         if self.terminal[current_state]:
-            return s, 0, True
+            return current_state, 0, True
 
         # generate observation+reward output
         probs = self.P[current_state, action]

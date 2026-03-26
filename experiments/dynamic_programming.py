@@ -1,5 +1,5 @@
-from algorithms.dp import (ValueIteration,
-                           PolicyIteration)
+from algorithms.classical.dp import (ValueIteration,
+                                     PolicyIteration)
 from utils.markov_decision_process import MDP
 
 seed = 42

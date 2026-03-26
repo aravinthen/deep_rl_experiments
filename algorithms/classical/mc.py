@@ -16,8 +16,8 @@ class MonteCarlo:
 
         # generate a random policy to start
         self.policy = np.random.randint(mdp.A, size=mdp.S)
-        self.epsilon = eps
-        self.alpha = alpha
+        self.epsilon = eps # for epsilon greedy selection
+        self.alpha = alpha # learning rate
 
         # value function
         self.returns = np.zeros((mdp.S, mdp.A))
