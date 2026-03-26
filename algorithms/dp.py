@@ -1,8 +1,7 @@
 #
-# Program name: dp.py
-# Description:  Classical reinforcement learning algorithms.
+# Program name: dynamic_programming.py
+# Description:  model-based classical reinforcement learning algorithms.
 #
-from math import gamma
 
 import numpy as np
 
