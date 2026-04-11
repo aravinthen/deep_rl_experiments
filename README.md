@@ -11,3 +11,7 @@ That means that
 2. logging will always be integrated and
 4. all outputs will be fully tested before being commited.
 
+The contents of this library is supported by technical notes that I post in my online research notes. The full collection of these notes can be found in the technical notes section.
+
+## Technical notes
+1. [Lessons from Classical RL](https://aravinthen.github.io/2026/02/28/lessons_from_classical_rl/)
