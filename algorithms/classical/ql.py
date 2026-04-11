@@ -40,6 +40,9 @@ class QLearning:
         action = self.sample_action(state)
         next_state, reward, done = self.mdp.step(action)
 
+        if self.mdp.noise is not None:
+            reward += np.random.uniform(*self.mdp.noise)
+
         # this is the key distinguisher between sarsa and q-learning.
         # in q-learning, the max Q over the next state is taken for the update.
         if done:
@@ -70,7 +73,7 @@ class QLearning:
         """
         return np.argmax(self.Q, axis=1)
 
-class doubleQLearning(QLearning):
+class DoubleQLearning(QLearning):
     """
     Implementation of double Q learning using previous Q-learning class.
     """
@@ -97,6 +100,9 @@ class doubleQLearning(QLearning):
         action = self.sample_action(state)
         next_state, reward, done = self.mdp.step(action)
 
+        if self.mdp.noise is not None:
+            reward += np.random.uniform(*self.mdp.noise)
+
         # randomly choose which Q function to update
         if np.random.rand() < 0.5:
             # Q1 update
@@ -121,3 +127,9 @@ class doubleQLearning(QLearning):
             self.Q2[state, action] = self.Q2[state, action] + self.alpha * td_error
 
         return done
+
+    def policy(self):
+        """
+        Return the policy after the learning updates
+        """
+        return np.argmax(self.Q + self.Q2, axis=1)

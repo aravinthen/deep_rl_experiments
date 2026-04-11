@@ -1,4 +1,4 @@
-from algorithms.classical.ql import QLearning, doubleQLearning
+from algorithms.classical.ql import QLearning, DoubleQLearning
 from utils.markov_decision_process import MDP
 
 seed = 42
@@ -20,7 +20,7 @@ print(q.policy())
 
 problem.reset()
 
-dq = doubleQLearning(mdp=problem)
+dq = DoubleQLearning(mdp=problem)
 print(dq.policy())
 dq.run(10000)
 print(dq.policy())

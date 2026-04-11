@@ -92,13 +92,13 @@ class MonteCarlo:
         """
         self.policy = np.argmax(self.Q, axis=1)
 
-    def run(self, num_eps, epsilon_decay):
+    def run(self, num_eps):
         """
         Run <num> MC trajectory counts and update the value function
         """
         for _ in range(num_eps):
             self.backward_pass()
             self.improve_policy()
-            self.epsilon = self.epsilon*epsilon_decay
+            self.epsilon = self.epsilon
 
         return self.policy, self.Q

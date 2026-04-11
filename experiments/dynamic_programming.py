@@ -10,7 +10,7 @@ n_t = 1
 # value iteration
 problem = MDP(num_states=n_s,
               num_actions=n_a,
-              num_terminal=n_t,
+              terminal_list=[n_s-1],
               reward_range=(-1,1),
               seed=seed)
 
@@ -31,7 +31,7 @@ print(" ")
 # policy iteration
 problem = MDP(num_states=n_s,
               num_actions=n_a,
-              num_terminal=n_t,
+              terminal_list=[n_s-1],
               reward_range=(-1,1),
               seed=seed)
 

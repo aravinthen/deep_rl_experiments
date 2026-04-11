@@ -20,6 +20,9 @@ class SARSA:
         # value function
         self.Q = np.zeros((mdp.S, mdp.A))
 
+        # action, specific to sarsa (action has to be stored)
+        self.action = None
+
     def sample_action(self, state):
         """
         Samples action with epsilon greedy policy
@@ -29,32 +32,46 @@ class SARSA:
         else:
             return np.argmax(self.Q[state])
 
-    def run_steps(self, timesteps):
+    def update(self):
+        """
+        Update step for SARSA.
+        """
+        state = self.mdp.state
+
+        if self.action is None:
+            self.action = self.sample_action(state)
+
+        next_state, reward, done = self.mdp.step(self.action)
+
+        if self.mdp.noise is not None:
+            reward += np.random.uniform(*self.mdp.noise)
+
+        # required to stop bootstrapping from terminal states
+        if done:
+            td_error = reward - self.Q[state, self.action]
+            self.Q[state, self.action] = (self.Q[state, self.action] + self.alpha*td_error)
+            self.action = None
+
+        else:
+            # forward step
+            next_action = self.sample_action(next_state)
+            td_error = reward + self.gamma*self.Q[next_state, next_action] - self.Q[state, self.action]
+            self.Q[state, self.action] = (self.Q[state, self.action] + self.alpha*td_error)
+
+            # store next action
+            self.action = next_action
+
+        return done
+
+    def run(self, num_steps):
         """
         Carries out a run of temporal difference learning for the current policy.
         """
-
-        state = self.mdp.reset()
-        action = self.sample_action(state)
-
-        for _ in range(timesteps):
-            next_state, reward, done = self.mdp.step(action)
-            next_action = self.sample_action(next_state)
-
-            # required to stop bootstrapping from terminal states
+        self.mdp.reset()
+        for _ in range(num_steps):
+            done = self.update()
             if done:
-                td_error = reward - self.Q[state, action]
-            else:
-                td_error = reward + self.gamma*self.Q[next_state, next_action] - self.Q[state, action]
-
-            self.Q[state, action] = (self.Q[state, action] + self.alpha*td_error)
-
-            if done:
-                state = self.mdp.reset()
-                action = self.sample_action(state)
-            else:
-                state = next_state
-                action = next_action
+                self.mdp.reset()
 
     def policy(self):
         """
