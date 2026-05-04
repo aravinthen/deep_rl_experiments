@@ -5,8 +5,8 @@ from utils.experiments import Experiment
 
 # config for gridworld
 config = {
-    "steps": 12500,
-    "eval_interval": 500,
+    "test_steps": 12500,
+    "test_interval": 500,
     "eval_episodes": 100,
     "eval_steps": 200,
     "mdp_kwargs": {

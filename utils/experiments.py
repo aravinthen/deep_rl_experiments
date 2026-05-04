@@ -9,11 +9,11 @@ import matplotlib.pyplot as plt
 class Experiment:
     def __init__(self, config):
         # parse config dictionary
-        self.steps = config["steps"]
+        self.steps = config["test_steps"]
+        self.test_interval = config["test_interval"]
 
-        self.eval_interval = config["eval_interval"]
         self.eval_episodes = config["eval_episodes"]
-        self.eval_steps = config["eval_steps"]
+        self.eval_max_steps = config["eval_steps"]
 
         self.mdp_kwargs = config["mdp_kwargs"]
         self.agent_kwargs = config["agent_kwargs"]
@@ -62,12 +62,12 @@ class Experiment:
             if done:
                 mdp.reset()
 
-            if t % self.eval_interval == 0:
+            if t % self.test_interval == 0:
                 # new initialisation of mdp required for evaluation
                 avg_return = self.evaluate_policy(algo,
                                                   mdp.__class__(**self.mdp_kwargs),
                                                   self.eval_episodes,
-                                                  self.eval_steps)
+                                                  self.eval_max_steps)
                 results.append(avg_return)
                 steps.append(t)
 
@@ -78,12 +78,13 @@ class Experiment:
         Carry out experiments over a given number of seeds
         """
         all_runs = []
+        steps = []
         for seed in seeds:
             np.random.seed(seed)
             self.mdp_kwargs["seed"] = seed
-            x, y = self.run_experiment(algo_class, mdp_class)
+            steps, trajectory = self.run_experiment(algo_class, mdp_class)
 
-            all_runs.append(y)
+            all_runs.append(trajectory)
 
         all_runs = np.array(all_runs)
 
@@ -91,8 +92,7 @@ class Experiment:
         mean = np.mean(all_runs, axis=0)
         std = np.std(all_runs, axis=0)
 
-        # x = steps, which is constant and can be carried over
-        return x, mean, std
+        return steps, mean, std
 
     @staticmethod
     def plot_experiments(results):
