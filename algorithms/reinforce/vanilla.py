@@ -20,15 +20,13 @@ class Policy(nn.Module):
         # agent policy network
         if hidden == 0:
             self.model = nn.Sequential(
-                nn.Linear(obs, action),
-                nn.Softmax(dim=-1)
+                nn.Linear(obs, action)
             )
         else:
             self.model = nn.Sequential(
                 nn.Linear(obs, hidden),
                 nn.ReLU(),
-                nn.Linear(hidden, action),
-                nn.Softmax(dim=-1)
+                nn.Linear(hidden, action)
             )
 
     def forward(self, obs: torch.Tensor):
@@ -43,10 +41,16 @@ class REINFORCE:
     Built to work with a Gym interface.
     """
 
-    def __init__(self, env: gym.Env, gamma:float = 0.99, hidden_layer=0, seed: int = 42):
+    def __init__(self, env: gym.Env,
+                 gamma:float = 0.99,
+                 hidden_layer: int =0,
+                 lr = 1e-3,
+                 norm_reward: bool = False,
+                 seed: int = 42):
 
         # seeds
         self.seed = seed
+        self.norm_reward = norm_reward
         torch.manual_seed(self.seed)
 
         # specify environment and agent
@@ -57,7 +61,7 @@ class REINFORCE:
                                    hidden_layer)
 
         # optimizer for gradient generation
-        self.optim = optim.Adam(self.agent_policy.parameters(), lr = 1e-3)
+        self.optim = optim.Adam(self.agent_policy.parameters(), lr = lr)
 
         # state information
         self.log_probs = []
@@ -84,12 +88,12 @@ class REINFORCE:
             obs = torch.tensor(self.obs, dtype=torch.float32).unsqueeze(0)
 
             # agent will pass logits
-            probs = self.agent_policy(obs)
+            logs = self.agent_policy(obs)
 
             # sample action
             #   1. first generate a probability distribution over the actions
             #   2. sample an action over that distribution,
-            action_prob = torch.distributions.Categorical(probs)
+            action_prob = torch.distributions.Categorical(logits=logs)
             action = action_prob.sample()
 
             # append log probability for calculation
@@ -124,8 +128,12 @@ class REINFORCE:
 
         returns = torch.tensor(returns)
 
+        if self.norm_reward:
+            returns = (returns - returns.mean())/ (returns.std() + 1e-8)
+
         # find the individual loss for each step
         policy_loss = []
+        baseline = returns.mean()
         for step in range(len(self.log_probs)):
             log_prob = self.log_probs[step]
             G = returns[step]
