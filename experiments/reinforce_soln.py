@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import time
 
 training_eps = 2000
-agents = 1
+agents = 10
 reward_log = 1
 
 # generate seeds only once
